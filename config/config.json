@@ -2,7 +2,7 @@
     "development": {
         "username": "root",
         "password": "root",
-        "database": "reports",
+        "database": "closecalls",
         "host": "localhost",
         "dialect": "mysql"
     },

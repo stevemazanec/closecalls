@@ -1,15 +1,35 @@
-var db = require("../models");
-var NodeGeocoder = require("node-geocoder");
+const express = require('express');
+const router = express.Router();
+const db = require("../models");
+const NodeGeocoder = require("node-geocoder");
 
-var options = {
+const options = {
     provider: "mapquest",
     httpAdapter: 'https',
     apiKey: process.env.MAPQUEST_KEY,
     formatter: null
 };
 
-var geocoder = NodeGeocoder(options);
+const geocoder = NodeGeocoder(options);
 
-module.exports = function (app) {
-    //API routes will go here
-}
+
+//API routes will go here
+router.post("/reports", function (req, res) {
+    //Takes the address the user inputted and converts it to lattitude and longitude before passing it to the database
+    geocoder.geocode(req.body.address, function (err, res) {
+        const lat = res[0].latitude;
+        const long = res[0].longitude;
+
+
+        console.log(req.body);
+        db.Report.create({
+            date: req.body.date,
+            address: req.body.address,
+            latitude: lat,
+            longitude: long,
+            comment: req.body.comment
+        });
+    });
+})
+
+module.exports = router;
