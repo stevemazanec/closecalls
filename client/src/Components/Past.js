@@ -7,15 +7,13 @@ class Past extends Component {
         this.state = {
             date: '',
             dateError: '',
-            time: '',
-            timeError: "",
-            location: "",
-            locationError: "",
+            address: "",
+            addressError: "",
             comment: "",
             commentError: '',
 
         }
-        //  this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
         //   this.validate = this.validate.bind(this)
     }
@@ -53,41 +51,27 @@ class Past extends Component {
     // 	return isError
     // }
 
-    // handleSubmit(event) {
-    // 	event.preventDefault()
-    // 	const err = this.validate();
+    handleSubmit(event) {
+        event.preventDefault()
+        //	const err = this.validate();
+        //if (!err) {
+        //request to server to add a new username/password
+        axios.post('/api/reports/', {
+            date: this.state.date,
+            address: this.state.address,
+            comment: this.state.comment
+        })
+        alert("Your report has been submitted");
+        this.setState({
+            dateError: "",
+            date: "",
+            addressError: "",
+            address: "",
+            commentError: "",
+            comment: "",
+        })
 
-    // 	if (!err) {
-    // 		//request to server to add a new username/password
-    // 		axios.post('/api/user/', {
-    // 			username: this.state.username,
-    // 			password: this.state.password,
-    // 			rolename: this.state.rolename,
-    // 			firstname: this.state.firstname,
-    // 			lastname: this.state.lastname
-    // 		})
-    // 			.then(response => {
-    // 				console.log(response)
-    // 				if (!response.data.error) {
-    // 					alert("New user successfully created")
-    // 					this.setState({
-    // 						usernameError: "",
-    // 						username: "",
-    // 						firstnameError: "",
-    // 						firstname: "",
-    // 						lastnameError: "",
-    // 						lastname: "",
-    // 					})
-    // 				} else {
-    // 					this.duplicateName();
-    // 				}
-    // 			}).catch(error => {
-    // 				console.log('signup error: ')
-    // 				console.log(error)
-
-    // 			})
-    // 	}
-    // }
+    }
 
 
 
@@ -118,27 +102,13 @@ class Past extends Component {
                         <div className="col-4 col-mr-auto">
                             <input className="form-input"
                                 type="text"
-                                id="time"
-                                name="time"
-                                placeholder="Time of Day"
-                                value={this.state.time}
+                                id="address"
+                                name="address"
+                                placeholder="Address of Incident"
+                                value={this.state.address}
                                 onChange={this.handleChange}
                             />
-                            <span style={styles}>{this.state.timeError}</span>
-                        </div>
-                    </div>
-                    <br></br>
-                    <div className="form-group">
-                        <div className="col-4 col-mr-auto">
-                            <input className="form-input"
-                                type="text"
-                                id="location"
-                                name="location"
-                                placeholder="Location of Incident"
-                                value={this.state.location}
-                                onChange={this.handleChange}
-                            />
-                            <span style={styles}>{this.state.locationError}</span>
+                            <span style={styles}>{this.state.addressError}</span>
                         </div>
                     </div>
                     <br></br>

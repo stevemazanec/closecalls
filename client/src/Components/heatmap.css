@@ -1,4 +1,10 @@
 #map{
     width: 640px;
     height: 1080px;
+    margin: auto
+}
+
+li {
+    display: inline;
+    margin: 10px;
 }
