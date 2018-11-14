@@ -32,4 +32,18 @@ router.post("/reports", function (req, res) {
     });
 })
 
+router.get("/reports/:startdate/:enddate", function (req, res) {
+    console.log(`Start date ${req.params.startdate}`)
+    db.Report.findAll({
+        where: {
+            date: {
+                "$between": [req.params.startdate, req.params.enddate]
+            }
+        }
+    }).then(function (dbReports) {
+        res.json(dbReports);
+    });
+});
+
+
 module.exports = router;
