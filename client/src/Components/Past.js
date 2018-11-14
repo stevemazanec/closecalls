@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+const moment = require('moment');
+moment().format();
 
 class Past extends Component {
     constructor() {
         super()
         this.state = {
-            date: '',
+            date: moment(Date.now()).format('YYYY-MM-DD'),
             dateError: '',
             address: "",
             addressError: "",
@@ -57,7 +59,7 @@ class Past extends Component {
         //if (!err) {
         //request to server to add a new username/password
         axios.post('/api/reports/', {
-            date: this.state.date,
+            date: moment(this.state.date, 'YYYY-MM-DD'),
             address: this.state.address,
             comment: this.state.comment
         })
@@ -84,7 +86,7 @@ class Past extends Component {
                 <h3 className="signup-title">Past Incident Report</h3>
                 <form>
                     <div className="form-group">
-
+                        {`Date: `}
                         <div className="col-4 col-mr-auto" >
                             <input className="form-input"
                                 type="text"
@@ -99,6 +101,7 @@ class Past extends Component {
                     </div>
                     <br></br>
                     <div className="form-group">
+                        {`Address: `}
                         <div className="col-4 col-mr-auto">
                             <input className="form-input"
                                 type="text"
@@ -113,13 +116,14 @@ class Past extends Component {
                     </div>
                     <br></br>
                     <div className="form-group">
+                        {`Description: `}
                         <div>
                             <textarea
                                 type="text"
                                 id="comment"
                                 name="comment"
                                 placeholder="Describe the Incident"
-                                value={this.state.location}
+                                value={this.state.comment}
                                 onChange={this.handleChange}
                                 rows="6"
                             />
