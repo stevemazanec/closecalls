@@ -4,8 +4,7 @@ import './heatmap.css';
 import axios from 'axios';
 const moment = require('moment');
 moment().format();
-let marker;
-let mymap;
+const markers = [];
 
 class Heatmap extends React.Component {
     constructor() {
@@ -13,11 +12,17 @@ class Heatmap extends React.Component {
         this.state = {
             startdate: moment(Date.now()).subtract(30, "days").format('YYYY-MM-DD'),
             enddate: moment(Date.now()).format('YYYY-MM-DD'),
+            starttime: moment(Date.now()).subtract(2, "h").format("HH:mm"),
+            endtime: moment(Date.now()).format("HH:mm"),
+            searchStart: "",
+            searchEnd: "",
         }
         this.handleDateSubmit = this.handleDateSubmit.bind(this);
+        this.handleTimeSubmit = this.handleTimeSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.createMap = this.createMap.bind(this);
         this.updateMapDate = this.updateMapDate.bind(this);
+        this.updateMapTime = this.updateMapTime.bind(this);
     }
     handleChange(event) {
         this.setState({
@@ -29,25 +34,64 @@ class Heatmap extends React.Component {
         this.updateMapDate();
     }
 
+    handleTimeSubmit(event) {
+        event.preventDefault()
+        this.updateMapTime();
+    }
+
 
     updateMapDate() {
+        for (let i = 0; i < markers.length; i++) {
+            this.map.removeLayer(markers[i]);
+        }
         const startdate = this.state.startdate;
         const enddate = this.state.enddate;
+        this.setState({
+            searchStart: startdate,
+            searchEnd: enddate
+        })
         //Loops through each floorer and adds them to the map using their latitude and longitude
-        axios.get(`/api/reports/${startdate}/${enddate}`).then(response => {
+        axios.get(`/api/reportsdate/${startdate}/${enddate}`).then(response => {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
                 const long = response.data[i].longitude;
 
                 //Adds a marker indicating the floorer's location, along with their name
-                marker = L.marker([lat, long]).addTo(mymap);
-                marker.bindPopup(`${response.data[i].date}`).openPopup();
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${response.data[i].date}`).openPopup();
+                markers.push(newMarker);
+                // this.marker = L.marker([lat, long]).addTo(this.map);
+                // this.marker.bindPopup(`${response.data[i].date}`).openPopup();
+            }
+        })
+    }
+
+    updateMapTime() {
+        for (let i = 0; i < markers.length; i++) {
+            this.map.removeLayer(markers[i]);
+        }
+        const starttime = this.state.starttime;
+        const endtime = this.state.endtime;
+        this.setState({
+            searchStart: starttime,
+            searchEnd: endtime
+        })
+        //Loops through each floorer and adds them to the map using their latitude and longitude
+        axios.get(`/api/reportstime/${starttime}/${endtime}`).then(response => {
+            for (let i = 0; i < response.data.length; i++) {
+                const lat = response.data[i].latitude;
+                const long = response.data[i].longitude;
+
+                //Adds a marker indicating the floorer's location, along with their name
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${response.data[i].time}`).openPopup();
+                markers.push(newMarker);
+                // this.marker = L.marker([lat, long]).addTo(this.map);
+                // this.marker.bindPopup(`${response.data[i].time}`).openPopup();
             }
         })
     }
 
     createMap() {
-        mymap = this.map = L.map('map', {
+        this.map = L.map('map', {
             center: [41.500, -81.700],
             zoom: 13,
             layers: [
@@ -61,32 +105,36 @@ class Heatmap extends React.Component {
             ]
         });
 
-
         const startdate = this.state.startdate;
         const enddate = this.state.enddate;
+        this.setState({
+            searchStart: startdate,
+            searchEnd: enddate
+        })
         //Loops through each floorer and adds them to the map using their latitude and longitude
-        axios.get(`/api/reports/${startdate}/${enddate}`).then(response => {
+        axios.get(`/api/reportsdate/${startdate}/${enddate}`).then(response => {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
                 const long = response.data[i].longitude;
 
                 //Adds a marker indicating the floorer's location, along with their name
-                marker = L.marker([lat, long]).addTo(mymap);
-                marker.bindPopup(`${response.data[i].date}`).openPopup();
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${response.data[i].date}`).openPopup();
+                markers.push(newMarker);
+                // this.marker = L.marker([lat, long]).addTo(this.map);
+                // this.marker.bindPopup(`${response.data[i].date}`).openPopup();
             }
         })
     }
     componentDidMount() {
         // create map
-
-
         this.createMap();
     }
     render() {
 
         return <div id="mapContainer">
-            <div><h5>Search by Date:</h5>
-                <form>
+            <div id="formContainer">
+                <form id="dateForm">
+                    <h5>Search by Date:</h5>
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
@@ -123,7 +171,46 @@ class Heatmap extends React.Component {
                     </div>
                 </form>
                 <br />
+
+                <form id="timeForm">
+                    <h5>Search by Time of Day:</h5>
+                    <div className="form-group">
+
+                        <div className="col-4 col-mr-auto" >
+                            <input className="form-input"
+                                type="text"
+                                id="starttime"
+                                name="starttime"
+                                placeholder="Starting Time"
+                                value={this.state.starttime}
+                                onChange={this.handleChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+
+                        <div className="col-4 col-mr-auto" >
+                            <input className="form-input"
+                                type="text"
+                                id="endtime"
+                                name="endtime"
+                                placeholder="Ending Time"
+                                value={this.state.endtime}
+                                onChange={this.handleChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group ">
+                        <div className="col-12"></div>
+                        <button
+                            className=" btn btn-primary signup-button "
+                            onClick={this.handleTimeSubmit}
+                            type="submit"
+                        >Search Times</button>
+                    </div>
+                </form>
             </div>
+            <h4>Showing Close Calls Between {this.state.searchStart} and {this.state.searchEnd}</h4>
             <div id="map"></div>
         </div>
     }

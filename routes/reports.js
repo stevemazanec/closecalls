@@ -24,6 +24,7 @@ router.post("/reports", function (req, res) {
         console.log(req.body);
         db.Report.create({
             date: req.body.date,
+            time: req.body.time,
             address: req.body.address,
             latitude: lat,
             longitude: long,
@@ -32,12 +33,23 @@ router.post("/reports", function (req, res) {
     });
 })
 
-router.get("/reports/:startdate/:enddate", function (req, res) {
-    console.log(`Start date ${req.params.startdate}`)
+router.get("/reportsdate/:startdate/:enddate", function (req, res) {
     db.Report.findAll({
         where: {
             date: {
                 "$between": [req.params.startdate, req.params.enddate]
+            }
+        }
+    }).then(function (dbReports) {
+        res.json(dbReports);
+    });
+});
+
+router.get("/reportstime/:starttime/:endtime", function (req, res) {
+    db.Report.findAll({
+        where: {
+            time: {
+                "$between": [req.params.starttime, req.params.endtime]
             }
         }
     }).then(function (dbReports) {
