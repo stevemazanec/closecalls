@@ -59,7 +59,7 @@ class Past extends Component {
         //	const err = this.validate();
         //if (!err) {
         //request to server to add a new username/password
-        axios.post('/api/reports/', {
+        axios.post('/api/pastreports/', {
             date: moment(this.state.date, 'YYYY-MM-DD'),
             time: this.state.time,
             address: this.state.address,

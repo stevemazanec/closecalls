@@ -14,22 +14,32 @@ const geocoder = NodeGeocoder(options);
 
 
 //API routes will go here
-router.post("/reports", function (req, res) {
+router.post("/pastreports", function (req, res) {
     //Takes the address the user inputted and converts it to lattitude and longitude before passing it to the database
     geocoder.geocode(req.body.address, function (err, res) {
         const lat = res[0].latitude;
         const long = res[0].longitude;
 
-
         console.log(req.body);
         db.Report.create({
             date: req.body.date,
             time: req.body.time,
-            address: req.body.address,
             latitude: lat,
             longitude: long,
             comment: req.body.comment
         });
+    });
+})
+
+router.post("/recentreports", function (req, res) {
+    //Takes the address the user inputted and converts it to lattitude and longitude before passing it to the database
+    console.log(req.body);
+    db.Report.create({
+        date: req.body.date,
+        time: req.body.time,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
+        comment: req.body.comment
     });
 })
 
