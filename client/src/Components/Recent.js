@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 const moment = require('moment');
 moment().format();
+let lat;
+let long;
 
 class Recent extends Component {
     constructor() {
@@ -10,21 +12,51 @@ class Recent extends Component {
             date: moment(Date.now()).format('YYYY-MM-DD'),
             dateError: '',
             time: moment(Date.now()).format('HH:mm'),
-            address: "",
-            addressError: "",
+            latitude: "",
+            longitude: "",
             comment: "",
             commentError: '',
 
         }
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.geoFindMe = this.geoFindMe.bind(this);
         //   this.validate = this.validate.bind(this)
     }
     handleChange(event) {
         this.setState({
-            [event.target.name]: event.target.value
+            [event.target.name]: event.target.value,
         })
     }
+
+    geoFindMe = () => {
+        if (!navigator.geolocation) {
+            console.log("<p>Geolocation is not supported by your browser</p>");
+            return;
+        }
+
+        const success = (position) => {
+            lat = position.coords.latitude;
+            long = position.coords.longitude;
+            this.setState({
+                latitude: lat,
+                longitude: long
+            })
+        }
+
+        function error() {
+            console.log("Unable to retrieve your location");
+        }
+
+
+        navigator.geolocation.getCurrentPosition(success, error);
+
+    }
+
+    componentDidMount() {
+        this.geoFindMe();
+    }
+
 
     // validate = () => {
     // 	let isError = false;
@@ -59,10 +91,11 @@ class Recent extends Component {
         //	const err = this.validate();
         //if (!err) {
         //request to server to add a new username/password
-        axios.post('/api/reports/', {
+        axios.post('/api/recentreports/', {
             date: moment(this.state.date, 'YYYY-MM-DD'),
             time: this.state.time,
-            address: this.state.address,
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
             comment: this.state.comment
         })
         alert("Your report has been submitted");
@@ -70,8 +103,6 @@ class Recent extends Component {
             dateError: "",
             date: "",
             time: "",
-            addressError: "",
-            address: "",
             commentError: "",
             comment: "",
         })
@@ -86,6 +117,7 @@ class Recent extends Component {
         }
         return (
             <div>
+                <div id="out"></div>
                 <h3 className="signup-title">Recent Incident Report</h3>
                 <form>
                     <div className="form-group">
@@ -118,14 +150,29 @@ class Recent extends Component {
                     </div>
                     <br></br>
                     <div className="form-group">
-                        {`Address: `}
+                        {`Latitude: `}
                         <div className="col-4 col-mr-auto">
                             <input className="form-input"
                                 type="text"
-                                id="address"
-                                name="address"
-                                placeholder="Address of Incident"
-                                value={this.state.address}
+                                id="latitude"
+                                name="latitude"
+                                placeholder="Latitude of Incident"
+                                value={this.state.latitude}
+                                onChange={this.handleChange}
+                            />
+                            <span style={styles}>{this.state.addressError}</span>
+                        </div>
+                    </div>
+                    <br></br>
+                    <div className="form-group">
+                        {`Longitute: `}
+                        <div className="col-4 col-mr-auto">
+                            <input className="form-input"
+                                type="text"
+                                id="longitude"
+                                name="longitude"
+                                placeholder="Longitude of Incident"
+                                value={this.state.longitude}
                                 onChange={this.handleChange}
                             />
                             <span style={styles}>{this.state.addressError}</span>

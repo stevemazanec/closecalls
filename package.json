@@ -28,8 +28,11 @@
     "mysql2": "^1.6.4",
     "node-geocoder": "^3.22.0",
     "prop-types": "^15.6.2",
+    "react": "^16.6.3",
     "react-date-picker": "^7.0.0",
     "react-datepicker": "^1.8.0",
+    "react-dom": "^16.6.3",
+    "react-geolocated": "^2.4.0",
     "react-leaflet": "^2.1.2",
     "sequelize": "^4.41.2"
   }
