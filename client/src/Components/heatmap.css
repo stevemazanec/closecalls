@@ -8,3 +8,13 @@ li {
     display: inline;
     margin: 10px;
 }
+#formContainer {
+    display: flex;
+    justify-content: center
+}
+#dateForm {
+    margin-right: 30px;
+}
+#timeForm {
+    margin-left: 30px;
+}

@@ -9,6 +9,7 @@ class Recent extends Component {
         this.state = {
             date: moment(Date.now()).format('YYYY-MM-DD'),
             dateError: '',
+            time: moment(Date.now()).format('HH:mm'),
             address: "",
             addressError: "",
             comment: "",
@@ -60,6 +61,7 @@ class Recent extends Component {
         //request to server to add a new username/password
         axios.post('/api/reports/', {
             date: moment(this.state.date, 'YYYY-MM-DD'),
+            time: this.state.time,
             address: this.state.address,
             comment: this.state.comment
         })
@@ -67,6 +69,7 @@ class Recent extends Component {
         this.setState({
             dateError: "",
             date: "",
+            time: "",
             addressError: "",
             address: "",
             commentError: "",
@@ -97,6 +100,20 @@ class Recent extends Component {
                                 onChange={this.handleChange}
                             />
                             <span style={styles}>{this.state.dateError}</span>
+                        </div>
+                    </div>
+                    <br></br>
+                    <div className="form-group">
+                        {`Time: `}
+                        <div className="col-4 col-mr-auto" >
+                            <input className="form-input"
+                                type="text"
+                                id="time"
+                                name="time"
+                                placeholder="Incident Time"
+                                value={this.state.time}
+                                onChange={this.handleChange}
+                            />
                         </div>
                     </div>
                     <br></br>
