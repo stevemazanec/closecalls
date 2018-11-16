@@ -12,8 +12,8 @@ class Heatmap extends React.Component {
         this.state = {
             startdate: moment(Date.now()).subtract(30, "days").format('YYYY-MM-DD'),
             enddate: moment(Date.now()).format('YYYY-MM-DD'),
-            starttime: moment(Date.now()).subtract(2, "h").format("HH:mm"),
-            endtime: moment(Date.now()).format("HH:mm"),
+            starttime: moment(Date.now()).subtract(2, "h").format("h:mm A"),
+            endtime: moment(Date.now()).format("h:mm A"),
             searchStart: "",
             searchEnd: "",
         }
@@ -80,9 +80,15 @@ class Heatmap extends React.Component {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
                 const long = response.data[i].longitude;
+                let timeString = response.data[i].time;
+                const hourEnd = timeString.indexOf(":");
+                const H = +timeString.substr(0, hourEnd);
+                const h = H % 12 || 12;
+                const ampm = H < 12 ? "AM" : "PM";
+                timeString = h + timeString.substr(hourEnd, 3) + ampm;
 
                 //Adds a marker indicating the floorer's location, along with their name
-                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${response.data[i].time}`).openPopup();
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${timeString}`).openPopup();
                 markers.push(newMarker);
                 // this.marker = L.marker([lat, long]).addTo(this.map);
                 // this.marker.bindPopup(`${response.data[i].time}`).openPopup();
@@ -132,12 +138,15 @@ class Heatmap extends React.Component {
     render() {
 
         return <div id="mapContainer">
+            <h4>Showing Close Calls Between {this.state.searchStart} and {this.state.searchEnd}</h4>
+            <div id="map"></div>
             <div id="formContainer">
                 <form id="dateForm">
                     <h5>Search by Date:</h5>
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
+                            {`Starting Date:  `}
                             <input className="form-input"
                                 type="text"
                                 id="startdate"
@@ -148,9 +157,11 @@ class Heatmap extends React.Component {
                             />
                         </div>
                     </div>
+                    <br />
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
+                            {`Ending Date:  `}
                             <input className="form-input"
                                 type="text"
                                 id="enddate"
@@ -161,6 +172,7 @@ class Heatmap extends React.Component {
                             />
                         </div>
                     </div>
+                    <br />
                     <div className="form-group ">
                         <div className="col-12"></div>
                         <button
@@ -177,6 +189,7 @@ class Heatmap extends React.Component {
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
+                            {`Starting Time: `}
                             <input className="form-input"
                                 type="text"
                                 id="starttime"
@@ -187,9 +200,11 @@ class Heatmap extends React.Component {
                             />
                         </div>
                     </div>
+                    <br />
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
+                            {`Ending Time:   `}
                             <input className="form-input"
                                 type="text"
                                 id="endtime"
@@ -200,6 +215,7 @@ class Heatmap extends React.Component {
                             />
                         </div>
                     </div>
+                    <br />
                     <div className="form-group ">
                         <div className="col-12"></div>
                         <button
@@ -210,8 +226,6 @@ class Heatmap extends React.Component {
                     </div>
                 </form>
             </div>
-            <h4>Showing Close Calls Between {this.state.searchStart} and {this.state.searchEnd}</h4>
-            <div id="map"></div>
         </div>
     }
 }

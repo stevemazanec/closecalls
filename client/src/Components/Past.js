@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 const moment = require('moment');
 moment().format();
 
@@ -7,23 +9,29 @@ class Past extends Component {
     constructor() {
         super()
         this.state = {
-            date: moment(Date.now()).format('YYYY-MM-DD'),
+            date: moment(),
             dateError: '',
-            time: "",
+            time: moment(Date.now()).format('HH:mm A'),
             address: "",
             addressError: "",
             comment: "",
             commentError: '',
-
         }
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
         //   this.validate = this.validate.bind(this)
     }
     handleChange(event) {
         this.setState({
             [event.target.name]: event.target.value
         })
+    }
+
+    handleDateChange(date) {
+        this.setState({
+            date: date
+        });
     }
 
     // validate = () => {
@@ -60,7 +68,7 @@ class Past extends Component {
         //if (!err) {
         //request to server to add a new username/password
         axios.post('/api/pastreports/', {
-            date: moment(this.state.date, 'YYYY-MM-DD'),
+            date: this.state.date,
             time: this.state.time,
             address: this.state.address,
             comment: this.state.comment
@@ -91,15 +99,11 @@ class Past extends Component {
                     <div className="form-group">
                         {`Date: `}
                         <div className="col-4 col-mr-auto" >
-                            <input className="form-input"
-                                type="text"
-                                id="date"
-                                name="date"
-                                placeholder="Incident Date"
-                                value={this.state.date}
-                                onChange={this.handleChange}
+                            <DatePicker
+                                dateFormat="YYYY/MM/DD"
+                                selected={this.state.date}
+                                onChange={this.handleDateChange}
                             />
-                            <span style={styles}>{this.state.dateError}</span>
                         </div>
                     </div>
                     <br></br>
@@ -147,7 +151,7 @@ class Past extends Component {
                             <span style={styles}>{this.state.commentError}</span>
                         </div>
                     </div>
-
+                    <br />
                     <div className="form-group ">
                         <div className="col-12"></div>
                         <button

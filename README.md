@@ -1,1 +1,1 @@
-# projectzero
+Close Calls is a mobile-first, open source app that aims to make biking safer in Cleveland. Users can report near accidents either immediately after the incident happened, or later on when they have time. Users are also able to view past incidents either within a certain date range or during certain times of the day. The goal of this app is to provide more information to the city of Cleveland about locations that may be more dangerous for bikers. 

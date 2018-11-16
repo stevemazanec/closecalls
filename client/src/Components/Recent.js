@@ -11,7 +11,7 @@ class Recent extends Component {
         this.state = {
             date: moment(Date.now()).format('YYYY-MM-DD'),
             dateError: '',
-            time: moment(Date.now()).format('HH:mm'),
+            time: moment(Date.now()).format('HH:mm A'),
             latitude: "",
             longitude: "",
             comment: "",
@@ -165,7 +165,7 @@ class Recent extends Component {
                     </div>
                     <br></br>
                     <div className="form-group">
-                        {`Longitute: `}
+                        {`Longitude: `}
                         <div className="col-4 col-mr-auto">
                             <input className="form-input"
                                 type="text"
@@ -194,7 +194,7 @@ class Recent extends Component {
                             <span style={styles}>{this.state.commentError}</span>
                         </div>
                     </div>
-
+                    <br />
                     <div className="form-group ">
                         <div className="col-12"></div>
                         <button

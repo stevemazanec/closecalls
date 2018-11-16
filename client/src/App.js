@@ -16,7 +16,7 @@ class App extends Component {
           <Route exact path="/" component={Home} />
           <Route exact path="/recent" component={Recent} />
           <Route exact path="/past" component={Past} />
-          <Route exact path="/heatmap" component={Heatmap} />
+          <Route exact path="/incidentmap" component={Heatmap} />
         </div>
       </Router>
 

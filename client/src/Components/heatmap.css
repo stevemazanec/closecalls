@@ -1,6 +1,18 @@
+header {
+    background-color: #83B4B3;
+}
+body {
+    background-color: #FFF0CE;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%231c63d6' fill-opacity='0.3' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+font-family: Arial, Helvetica, sans-serif
+}
+ul {
+    margin-top: 0;
+    padding: 5px;
+}
 #map{
     width: 600px;
-    height: 980px;
+    height: 880px;
     margin: auto
 }
 
@@ -8,13 +20,44 @@ li {
     display: inline;
     margin: 10px;
 }
+
+.btn {
+    background-color: #D55534;
+    padding: 5px;
+}
+
+.nav-link {
+    color: #FFF0CE;
+}
+
 #formContainer {
     display: flex;
     justify-content: center
 }
 #dateForm {
-    margin-right: 30px;
+    margin: 15px;
 }
 #timeForm {
-    margin-left: 30px;
+    margin: 15px;
+}
+form {
+    border: 1px solid black;
+    width: auto;
+    display: inline-block;
+    padding: 25px;
+}
+
+.incident {
+    height: 200px;
+    width: 200px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    background-color: #D55534;
+}
+
+.homebox{
+    color: black;
 }
