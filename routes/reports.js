@@ -12,6 +12,21 @@ const options = {
 
 const geocoder = NodeGeocoder(options);
 
+function convertTime12to24(time12h) {
+    const [time, modifier] = time12h.split(' ');
+
+    let [hours, minutes] = time.split(':');
+
+    if (hours === '12') {
+        hours = '00';
+    }
+
+    if (modifier === 'PM' || modifier === 'pm') {
+        hours = parseInt(hours, 10) + 12;
+    }
+
+    return hours + ':' + minutes;
+}
 
 //API routes will go here
 router.post("/pastreports", function (req, res) {
@@ -32,11 +47,11 @@ router.post("/pastreports", function (req, res) {
 })
 
 router.post("/recentreports", function (req, res) {
-    //Takes the address the user inputted and converts it to lattitude and longitude before passing it to the database
-    console.log(req.body);
+    const militaryTime = convertTime12to24(req.body.time);
+    console.log(militaryTime);
     db.Report.create({
         date: req.body.date,
-        time: req.body.time,
+        time: militaryTime,
         latitude: req.body.latitude,
         longitude: req.body.longitude,
         comment: req.body.comment
@@ -56,10 +71,12 @@ router.get("/reportsdate/:startdate/:enddate", function (req, res) {
 });
 
 router.get("/reportstime/:starttime/:endtime", function (req, res) {
+    const searchStart = convertTime12to24(req.params.starttime);
+    const searchEnd = convertTime12to24(req.params.endtime)
     db.Report.findAll({
         where: {
             time: {
-                "$between": [req.params.starttime, req.params.endtime]
+                "$between": [searchStart, searchEnd]
             }
         }
     }).then(function (dbReports) {
