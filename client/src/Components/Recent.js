@@ -10,10 +10,11 @@ class Recent extends Component {
         super()
         this.state = {
             date: moment(Date.now()).format('YYYY-MM-DD'),
-            dateError: '',
             time: moment(Date.now()).format('HH:mm A'),
             latitude: "",
+            latitudeError: "",
             longitude: "",
+            longitudeError: "",
             comment: "",
             commentError: '',
 
@@ -21,7 +22,7 @@ class Recent extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.geoFindMe = this.geoFindMe.bind(this);
-        //   this.validate = this.validate.bind(this)
+        this.validate = this.validate.bind(this)
     }
     handleChange(event) {
         this.setState({
@@ -58,55 +59,74 @@ class Recent extends Component {
     }
 
 
-    // validate = () => {
-    // 	let isError = false;
-    // 	const errors = {}
-    // 	if (this.state.username.length != 4) {
-    // 		isError = true;
-    // 		errors.usernameError = "Employee ID must be 4 digits in length"
-    // 	}
-    // 	else if (isNaN(this.state.username)) {
-    // 		isError = true;
-    // 		errors.usernameError = "You must enter numbers only"
-    // 	}
-    // 	else if (this.state.firstname.length < 1) {
-    // 		isError = true;
-    // 		errors.firstnameError = "You must enter a first name!"
-    // 	}
-    // 	else if (this.state.lastname.length < 1) {
-    // 		isError = true;
-    // 		errors.lastnameError = "You must enter a last name!"
-    // 	}
-    // 	if (isError) {
-    // 		this.setState({
-    // 			...this.state,
-    // 			...errors
-    // 		})
-    // 	}
-    // 	return isError
-    // }
+    validate = () => {
+        let isError = false;
+        const errors = {}
+        //Clear out previous error messages before checking for new errors
+        if (isError === false) {
+            this.setState({
+                timeError: "",
+                latitudeError: "",
+                longitudeError: "",
+                commentError: ""
+            })
+
+        }
+        //Regex to check for hh:MM a format
+        if (!this.state.starttime.match(/\b((1[0-2]|0?[0-9]):([0-5][0-9]) ([AaPp][Mm]))/)) {
+            isError = true;
+            errors.timeError = "Time must be entered in HH:MM AM/PM format (i.e. 06:18 AM)"
+        }
+        else if (this.state.latitude > 41.6) {
+            isError = true;
+            errors.latitudeError = "You must enter a latitude in the Cleveland area"
+        }
+        else if (this.state.latitude < 41.4) {
+            isError = true;
+            errors.latitudeError = "You must enter a latitude in the Cleveland area"
+        }
+        else if (this.state.longtitude < -81.8) {
+            isError = true;
+            errors.longitudeError = "You must enter a longitude in the Cleveland area"
+        }
+        else if (this.state.longtitude > -81.6) {
+            isError = true;
+            errors.longitudeError = "You must enter a longitude in the Cleveland area"
+        }
+        else if (this.state.comment.length < 1) {
+            isError = true;
+            errors.commentError = "Please enter a brief description of the incident"
+        }
+        if (isError) {
+            this.setState({
+                ...this.state,
+                ...errors
+            })
+        }
+        return isError
+    }
 
     handleSubmit(event) {
         event.preventDefault()
-        //	const err = this.validate();
-        //if (!err) {
-        //request to server to add a new username/password
-        axios.post('/api/recentreports/', {
-            date: moment(this.state.date, 'YYYY-MM-DD'),
-            time: this.state.time,
-            latitude: this.state.latitude,
-            longitude: this.state.longitude,
-            comment: this.state.comment
-        })
-        alert("Your report has been submitted");
-        this.setState({
-            dateError: "",
-            date: "",
-            time: "",
-            commentError: "",
-            comment: "",
-        })
-
+        const err = this.validate();
+        if (!err) {
+            //request to server to add a new username/password
+            axios.post('/api/recentreports/', {
+                date: moment(this.state.date, 'YYYY-MM-DD'),
+                time: this.state.time,
+                latitude: this.state.latitude,
+                longitude: this.state.longitude,
+                comment: this.state.comment
+            })
+            alert("Your report has been submitted");
+            this.setState({
+                dateError: "",
+                date: "",
+                time: "",
+                commentError: "",
+                comment: "",
+            })
+        }
     }
 
 
@@ -131,7 +151,6 @@ class Recent extends Component {
                                 value={this.state.date}
                                 onChange={this.handleChange}
                             />
-                            <span style={styles}>{this.state.dateError}</span>
                         </div>
                     </div>
                     <br></br>
@@ -147,6 +166,7 @@ class Recent extends Component {
                                 onChange={this.handleChange}
                             />
                         </div>
+                        <span style={styles}>{this.state.timeError}</span>
                     </div>
                     <br></br>
                     <div className="form-group">
@@ -160,8 +180,9 @@ class Recent extends Component {
                                 value={this.state.latitude}
                                 onChange={this.handleChange}
                             />
-                            <span style={styles}>{this.state.addressError}</span>
+
                         </div>
+                        <span style={styles}>{this.state.latitudeError}</span>
                     </div>
                     <br></br>
                     <div className="form-group">
@@ -175,8 +196,8 @@ class Recent extends Component {
                                 value={this.state.longitude}
                                 onChange={this.handleChange}
                             />
-                            <span style={styles}>{this.state.addressError}</span>
                         </div>
+                        <span style={styles}>{this.state.longitudeError}</span>
                     </div>
                     <br></br>
                     <div className="form-group">
@@ -191,8 +212,8 @@ class Recent extends Component {
                                 onChange={this.handleChange}
                                 rows="6"
                             />
-                            <span style={styles}>{this.state.commentError}</span>
                         </div>
+                        <span style={styles}>{this.state.commentError}</span>
                     </div>
                     <br />
                     <div className="form-group ">

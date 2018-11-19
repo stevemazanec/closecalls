@@ -11,9 +11,13 @@ class Heatmap extends React.Component {
         super()
         this.state = {
             startdate: moment(Date.now()).subtract(30, "days").format('YYYY-MM-DD'),
+            startdateError: '',
             enddate: moment(Date.now()).format('YYYY-MM-DD'),
-            starttime: moment(Date.now()).subtract(2, "h").format("h:mm A"),
-            endtime: moment(Date.now()).format("h:mm A"),
+            enddateError: '',
+            starttime: moment(Date.now()).subtract(2, "h").format("hh:mm A"),
+            starttimeError: '',
+            endtime: moment(Date.now()).format("hh:mm A"),
+            endtimeError: '',
             searchStart: "",
             searchEnd: "",
         }
@@ -23,6 +27,7 @@ class Heatmap extends React.Component {
         this.createMap = this.createMap.bind(this);
         this.updateMapDate = this.updateMapDate.bind(this);
         this.updateMapTime = this.updateMapTime.bind(this);
+        this.validate = this.validate.bind(this)
     }
     handleChange(event) {
         this.setState({
@@ -30,13 +35,19 @@ class Heatmap extends React.Component {
         })
     }
     handleDateSubmit(event) {
-        event.preventDefault()
-        this.updateMapDate();
+        event.preventDefault();
+        const err = this.validate();
+        if (!err) {
+            this.updateMapDate();
+        }
     }
 
     handleTimeSubmit(event) {
-        event.preventDefault()
-        this.updateMapTime();
+        event.preventDefault();
+        const err = this.validate();
+        if (!err) {
+            this.updateMapTime();
+        }
     }
 
 
@@ -55,9 +66,9 @@ class Heatmap extends React.Component {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
                 const long = response.data[i].longitude;
-
+                console.log(response.data[i].comment)
                 //Adds a marker indicating the floorer's location, along with their name
-                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${response.data[i].date}`).openPopup();
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`<b>Date: ${response.data[i].date}</b><br>Description: ${response.data[i].comment}`).openPopup();
                 markers.push(newMarker);
                 // this.marker = L.marker([lat, long]).addTo(this.map);
                 // this.marker.bindPopup(`${response.data[i].date}`).openPopup();
@@ -88,7 +99,7 @@ class Heatmap extends React.Component {
                 timeString = h + timeString.substr(hourEnd, 3) + ampm;
 
                 //Adds a marker indicating the floorer's location, along with their name
-                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${timeString}`).openPopup();
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`<b>Time: ${timeString}</b><br>Description: ${response.data[i].comment}`).openPopup();
                 markers.push(newMarker);
                 // this.marker = L.marker([lat, long]).addTo(this.map);
                 // this.marker.bindPopup(`${response.data[i].time}`).openPopup();
@@ -124,7 +135,7 @@ class Heatmap extends React.Component {
                 const long = response.data[i].longitude;
 
                 //Adds a marker indicating the floorer's location, along with their name
-                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`${response.data[i].date}`).openPopup();
+                let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`<b>Date: ${response.data[i].date}</b><br>Description: ${response.data[i].comment}`).openPopup();
                 markers.push(newMarker);
                 // this.marker = L.marker([lat, long]).addTo(this.map);
                 // this.marker.bindPopup(`${response.data[i].date}`).openPopup();
@@ -135,14 +146,59 @@ class Heatmap extends React.Component {
         // create map
         this.createMap();
     }
-    render() {
 
+    validate = () => {
+        let isError = false;
+        const errors = {}
+        //Clear out previous error messages before checking for new errors
+        if (isError === false) {
+            this.setState({
+                startdateError: "",
+                enddateError: "",
+                starttimeError: "",
+                endtimeError: ""
+            })
+
+        }
+        //Regex to check for YYYY-MM-DD format
+        if (!this.state.startdate.match(/^\d{4}([./-])\d{2}([./-])\d{2}$/)) {
+            isError = true;
+            errors.startdateError = "Date must be entered in YYYY-MM-DD format"
+        }
+        //Regex to check for YYYY-MM-DD format
+        if (!this.state.enddate.match(/^\d{4}([./-])\d{2}([./-])\d{2}$/)) {
+            isError = true;
+            errors.enddateError = "Date must be entered in YYYY-MM-DD format"
+        }
+        //Regex to check for hh:MM a format
+        else if (!this.state.starttime.match(/\b((1[0-2]|0?[0-9]):([0-5][0-9]) ([AaPp][Mm]))/)) {
+            isError = true;
+            errors.starttimeError = "Time must be entered in HH:MM AM/PM format (i.e. 06:18 AM)"
+        }
+        //Regex to check for hh:MM a format
+        else if (!this.state.starttime.match(/\b((1[0-2]|0?[0-9]):([0-5][0-9]) ([AaPp][Mm]))/)) {
+            isError = true;
+            errors.endtimeError = "Time must be entered in HH:MM AM/PM format (i.e. 06:18 AM)"
+        }
+        if (isError) {
+            this.setState({
+                ...this.state,
+                ...errors
+            })
+        }
+        return isError
+    }
+
+    render() {
+        const styles = {
+            color: "red"
+        }
         return <div id="mapContainer">
             <h4>Showing Close Calls Between {this.state.searchStart} and {this.state.searchEnd}</h4>
             <div id="map"></div>
             <div id="formContainer">
                 <form id="dateForm">
-                    <h5>Search by Date:</h5>
+                    <h3>Search by Date:</h3>
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
@@ -156,6 +212,11 @@ class Heatmap extends React.Component {
                                 onChange={this.handleChange}
                             />
                         </div>
+                        {this.state.startdateError.length > 1 ? (
+                            <span style={styles}>{this.state.startdateError}</span>
+                        ) : (
+                                null
+                            )}
                     </div>
                     <br />
                     <div className="form-group">
@@ -171,6 +232,7 @@ class Heatmap extends React.Component {
                                 onChange={this.handleChange}
                             />
                         </div>
+                        <span style={styles}>{this.state.enddateError}</span>
                     </div>
                     <br />
                     <div className="form-group ">
@@ -185,7 +247,7 @@ class Heatmap extends React.Component {
                 <br />
 
                 <form id="timeForm">
-                    <h5>Search by Time of Day:</h5>
+                    <h3>Search by Time of Day:</h3>
                     <div className="form-group">
 
                         <div className="col-4 col-mr-auto" >
@@ -199,6 +261,7 @@ class Heatmap extends React.Component {
                                 onChange={this.handleChange}
                             />
                         </div>
+                        <span style={styles}>{this.state.starttimeError}</span>
                     </div>
                     <br />
                     <div className="form-group">
@@ -214,6 +277,7 @@ class Heatmap extends React.Component {
                                 onChange={this.handleChange}
                             />
                         </div>
+                        <span style={styles}>{this.state.endtimeError}</span>
                     </div>
                     <br />
                     <div className="form-group ">

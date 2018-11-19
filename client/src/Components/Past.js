@@ -10,8 +10,8 @@ class Past extends Component {
         super()
         this.state = {
             date: moment(),
-            dateError: '',
-            time: moment(Date.now()).format('HH:mm A'),
+            time: moment(Date.now()).format('hh:mm A'),
+            timeError: '',
             address: "",
             addressError: "",
             comment: "",
@@ -20,7 +20,7 @@ class Past extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
-        //   this.validate = this.validate.bind(this)
+        this.validate = this.validate.bind(this)
     }
     handleChange(event) {
         this.setState({
@@ -34,56 +34,65 @@ class Past extends Component {
         });
     }
 
-    // validate = () => {
-    // 	let isError = false;
-    // 	const errors = {}
-    // 	if (this.state.username.length != 4) {
-    // 		isError = true;
-    // 		errors.usernameError = "Employee ID must be 4 digits in length"
-    // 	}
-    // 	else if (isNaN(this.state.username)) {
-    // 		isError = true;
-    // 		errors.usernameError = "You must enter numbers only"
-    // 	}
-    // 	else if (this.state.firstname.length < 1) {
-    // 		isError = true;
-    // 		errors.firstnameError = "You must enter a first name!"
-    // 	}
-    // 	else if (this.state.lastname.length < 1) {
-    // 		isError = true;
-    // 		errors.lastnameError = "You must enter a last name!"
-    // 	}
-    // 	if (isError) {
-    // 		this.setState({
-    // 			...this.state,
-    // 			...errors
-    // 		})
-    // 	}
-    // 	return isError
-    // }
+    validate = () => {
+        let isError = false;
+        const errors = {}
+        //Clear out previous error messages before checking for new errors
+        if (isError === false) {
+            this.setState({
+                timeError: "",
+                addressError: "",
+                commentError: ""
+            })
+
+        }
+        //Regex to check for hh:MM a format
+        if (!this.state.time.match(/\b((1[0-2]|0?[0-9]):([0-5][0-9]) ([AaPp][Mm]))/)) {
+            isError = true;
+            errors.timeError = "Time must be entered in HH:MM AM/PM format"
+        }
+        else if (this.state.address.length < 1) {
+            isError = true;
+            errors.addressError = "You must enter the nearest address"
+        }
+        else if (this.state.address.length < 10) {
+            isError = true;
+            errors.addressError = "You must enter the full address"
+        }
+        else if (this.state.comment.length < 1) {
+            isError = true;
+            errors.commentError = "Please enter a brief description of the incident"
+        }
+        if (isError) {
+            this.setState({
+                ...this.state,
+                ...errors
+            })
+        }
+        return isError
+    }
 
     handleSubmit(event) {
         event.preventDefault()
-        //	const err = this.validate();
-        //if (!err) {
-        //request to server to add a new username/password
-        axios.post('/api/pastreports/', {
-            date: this.state.date,
-            time: this.state.time,
-            address: this.state.address,
-            comment: this.state.comment
-        })
-        alert("Your report has been submitted");
-        this.setState({
-            dateError: "",
-            date: "",
-            time: "",
-            addressError: "",
-            address: "",
-            commentError: "",
-            comment: "",
-        })
-
+        const err = this.validate();
+        if (!err) {
+            //request to server to add a new username/password
+            axios.post('/api/pastreports/', {
+                date: this.state.date,
+                time: this.state.time,
+                address: this.state.address,
+                comment: this.state.comment
+            })
+            alert("Your report has been submitted");
+            this.setState({
+                date: "",
+                time: "",
+                addressError: "",
+                address: "",
+                commentError: "",
+                comment: "",
+            })
+        }
     }
 
 
@@ -118,7 +127,9 @@ class Past extends Component {
                                 value={this.state.time}
                                 onChange={this.handleChange}
                             />
+
                         </div>
+                        <span style={styles}>{this.state.timeError}</span>
                     </div>
                     <br></br>
                     <div className="form-group">
@@ -132,8 +143,9 @@ class Past extends Component {
                                 value={this.state.address}
                                 onChange={this.handleChange}
                             />
-                            <span style={styles}>{this.state.addressError}</span>
+
                         </div>
+                        <span style={styles}>{this.state.addressError}</span>
                     </div>
                     <br></br>
                     <div className="form-group">
@@ -148,8 +160,9 @@ class Past extends Component {
                                 onChange={this.handleChange}
                                 rows="6"
                             />
-                            <span style={styles}>{this.state.commentError}</span>
+
                         </div>
+                        <span style={styles}>{this.state.commentError}</span>
                     </div>
                     <br />
                     <div className="form-group ">
