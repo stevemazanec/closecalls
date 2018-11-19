@@ -45,19 +45,46 @@ form {
     width: auto;
     display: inline-block;
     padding: 25px;
+    box-shadow: 10px 10px 5px grey;
 }
 
 .incident {
     height: 200px;
     width: 200px;
     margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display:inline-block; 
     margin-top: 10px;
     background-color: #D55534;
 }
 
+#recentincident {
+    background-image: url(./alarm-clock-200x200.jpeg)
+}
+
+#pastincident {
+    background-image: url(./calendar.png)
+}
+
+#incidentmap {
+    background-image: url(./map.png)
+}
+
+.incidentText {
+    background-color: white;
+    margin-top: 90px;
+    padding: 5px;
+}
+
 .homebox{
     color: black;
+}
+
+#introduction {
+    width: 400px;
+    margin: auto;
+    border: 1px solid black;
+    padding: 10px;
+    box-shadow: 10px 10px 5px grey;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
