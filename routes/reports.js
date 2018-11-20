@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const db = require("../models");
 const NodeGeocoder = require("node-geocoder");
+const nodemailer = require('nodemailer')
+const smtpTransport = require('nodemailer-smtp-transport');
 
 const options = {
     provider: "mapquest",
@@ -82,6 +84,35 @@ router.get("/reportstime/:starttime/:endtime", function (req, res) {
     }).then(function (dbReports) {
         res.json(dbReports);
     });
+});
+
+router.post('/email', (req, res) => {
+    const data = req.body;
+    console.log('Data: ', data);
+    // create reusable transporter object using the default SMTP transport
+    var transporter = nodemailer.createTransport(smtpTransport(
+        {
+            host: 'smtp.gmail.com', port: 465, secure: true, service: 'Gmail',
+            auth: { user: process.env.USERNAME, pass: process.env.PASSWORD }, tls: { rejectUnauthorized: false }
+        }));
+    // setup e-mail data with unicode symbols
+    var mailOptions = {
+        from: process.env.USERNAME, // sender address
+        to: process.env.DESTINATION, // list of receivers
+        subject: 'New Incident Report', // Subject line
+        text: `
+        Date: ${data.date}
+        Time: ${data.time}
+        Location: ${data.address}
+        Summary: ${data.comment}`
+    };
+    //send mail with defined transport object
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            return console.log(error);
+        }
+    });
+    res.json('You should have an email');
 });
 
 

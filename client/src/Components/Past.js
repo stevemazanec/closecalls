@@ -76,7 +76,7 @@ class Past extends Component {
         event.preventDefault()
         const err = this.validate();
         if (!err) {
-            //request to server to add a new username/password
+            //Add report information to database
             axios.post('/api/pastreports/', {
                 date: this.state.date,
                 time: this.state.time,
@@ -84,6 +84,12 @@ class Past extends Component {
                 comment: this.state.comment
             })
             alert("Your report has been submitted");
+            // axios.post('/api/email/', {
+            //     date: this.state.date,
+            //     time: this.state.time,
+            //     address: this.state.address,
+            //     comment: this.state.comment
+            // })
             this.setState({
                 date: "",
                 time: "",

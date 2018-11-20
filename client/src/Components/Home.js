@@ -9,9 +9,14 @@ class Home extends Component {
         </h1>
             <div id="introduction">
                 <p>
-                    Close calls exists to help reduce bicycle accidents in Cleveland. We do this by logging the near-misses cyclists have, instead of waiting for accidents to happen.
-                     If you've had a close call in the last few minutes, use the recent incidents tab at the top of the screen to report the incident. If you've had a close call in the
-                     near past, use the past incident tab. If you want to learn more about where these near misses are happening, you can do so by viewing the incident map.
+                    Close calls exists to help reduce bicycle accidents in Cleveland.
+                    We do this by logging the near-misses cyclists have, instead of waiting for accidents to happen.
+                    If you've had a close call in the last few minutes, use the recent incidents tab at the top of the
+                    screen to report the incident. If you've had a close call in the near past,
+                    use the past incident tab. A copy of your report will be sent to the city,
+                    and if you would like you can have it emailed to yourself as well.
+                    If you want to learn more about where these near misses are happening,
+                    you can do so by viewing the incident map.
         </p>
             </div>
             <div className="row">

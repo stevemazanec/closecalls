@@ -5,6 +5,7 @@ import axios from 'axios';
 const moment = require('moment');
 moment().format();
 const markers = [];
+const circles = [];
 
 class Heatmap extends React.Component {
     constructor() {
@@ -29,11 +30,15 @@ class Heatmap extends React.Component {
         this.updateMapTime = this.updateMapTime.bind(this);
         this.validate = this.validate.bind(this)
     }
+
+    //Function to update the state as user types in textbox
     handleChange(event) {
         this.setState({
             [event.target.name]: event.target.value
         })
     }
+
+    //Function that runs when the user searches by date, first validating what they entered, then updating the map
     handleDateSubmit(event) {
         event.preventDefault();
         const err = this.validate();
@@ -42,6 +47,7 @@ class Heatmap extends React.Component {
         }
     }
 
+    //Function that runs when the user searches by time, first validating what they entered, then updating the map
     handleTimeSubmit(event) {
         event.preventDefault();
         const err = this.validate();
@@ -50,43 +56,55 @@ class Heatmap extends React.Component {
         }
     }
 
-
+    //Function that updates the map based on the dates the user is searching for
     updateMapDate() {
+        //Removes previous markers/circles from the map
         for (let i = 0; i < markers.length; i++) {
             this.map.removeLayer(markers[i]);
+            this.map.removeLayer(circles[i]);
         }
         const startdate = this.state.startdate;
         const enddate = this.state.enddate;
+        //Updates the text above the map informing the user what information is being displayed
         this.setState({
             searchStart: startdate,
             searchEnd: enddate
         })
-        //Loops through each floorer and adds them to the map using their latitude and longitude
+        //Loops through each report within the date range and adds it to the map using its latitude and longitude
         axios.get(`/api/reportsdate/${startdate}/${enddate}`).then(response => {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
                 const long = response.data[i].longitude;
                 console.log(response.data[i].comment)
-                //Adds a marker indicating the floorer's location, along with their name
+                //Adds a marker indicating the incidents's location, along with the date and description
                 let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`<b>Date: ${response.data[i].date}</b><br>Description: ${response.data[i].comment}`).openPopup();
                 markers.push(newMarker);
-                // this.marker = L.marker([lat, long]).addTo(this.map);
-                // this.marker.bindPopup(`${response.data[i].date}`).openPopup();
+                let newCircle = L.circle([lat, long], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.1,
+                    radius: 150
+                }).addTo(this.map);
+                circles.push(newCircle);
             }
         })
     }
 
+    //Function that updates the map based on the time of day the user is searching for
     updateMapTime() {
+        //Removes previous markers/circles from the map
         for (let i = 0; i < markers.length; i++) {
             this.map.removeLayer(markers[i]);
+            this.map.removeLayer(circles[i])
         }
         const starttime = this.state.starttime;
         const endtime = this.state.endtime;
+        //Updates the text above the map informing the user what information is being displayed
         this.setState({
             searchStart: starttime,
             searchEnd: endtime
         })
-        //Loops through each floorer and adds them to the map using their latitude and longitude
+        //Loops through each report within the time range and adds it to the map using its latitude and longitude
         axios.get(`/api/reportstime/${starttime}/${endtime}`).then(response => {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
@@ -98,15 +116,21 @@ class Heatmap extends React.Component {
                 const ampm = H < 12 ? "AM" : "PM";
                 timeString = h + timeString.substr(hourEnd, 3) + ampm;
 
-                //Adds a marker indicating the floorer's location, along with their name
+                //Adds a marker indicating the incidents's location, along with the time and description
                 let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`<b>Time: ${timeString}</b><br>Description: ${response.data[i].comment}`).openPopup();
                 markers.push(newMarker);
-                // this.marker = L.marker([lat, long]).addTo(this.map);
-                // this.marker.bindPopup(`${response.data[i].time}`).openPopup();
+                let newCircle = L.circle([lat, long], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.1,
+                    radius: 150
+                }).addTo(this.map);
+                circles.push(newCircle);
             }
         })
     }
 
+    //Function that runs when component loads, displaying incidents from the last 30 days be default
     createMap() {
         this.map = L.map('map', {
             center: [41.500, -81.700],
@@ -124,21 +148,27 @@ class Heatmap extends React.Component {
 
         const startdate = this.state.startdate;
         const enddate = this.state.enddate;
+        //Updates the text above the map informing the user what information is being displayed
         this.setState({
             searchStart: startdate,
             searchEnd: enddate
         })
-        //Loops through each floorer and adds them to the map using their latitude and longitude
+        //Loops through each report within the last 30 days and adds it to the map using its latitude and longitude
         axios.get(`/api/reportsdate/${startdate}/${enddate}`).then(response => {
             for (let i = 0; i < response.data.length; i++) {
                 const lat = response.data[i].latitude;
                 const long = response.data[i].longitude;
 
-                //Adds a marker indicating the floorer's location, along with their name
+                //Adds a marker indicating the incidents's location, along with the date and description
                 let newMarker = L.marker([lat, long]).addTo(this.map).bindPopup(`<b>Date: ${response.data[i].date}</b><br>Description: ${response.data[i].comment}`).openPopup();
                 markers.push(newMarker);
-                // this.marker = L.marker([lat, long]).addTo(this.map);
-                // this.marker.bindPopup(`${response.data[i].date}`).openPopup();
+                let newCircle = L.circle([lat, long], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.1,
+                    radius: 150
+                }).addTo(this.map);
+                circles.push(newCircle);
             }
         })
     }
