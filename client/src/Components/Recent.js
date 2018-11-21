@@ -30,12 +30,14 @@ class Recent extends Component {
         })
     }
 
+    //Function that grabs the users location from their device
     geoFindMe = () => {
+        //If their device doesn't allow Geolocation, tell the user
         if (!navigator.geolocation) {
-            console.log("<p>Geolocation is not supported by your browser</p>");
+            alert("Geolocation is not supported by your browser");
             return;
         }
-
+        //Once access is given to the user's information, update the latitude and longitude and display it in the form
         const success = (position) => {
             lat = position.coords.latitude;
             long = position.coords.longitude;
@@ -48,13 +50,12 @@ class Recent extends Component {
         function error() {
             console.log("Unable to retrieve your location");
         }
-
-
         navigator.geolocation.getCurrentPosition(success, error);
 
     }
 
     componentDidMount() {
+        //Once the component loads, grab the user's location
         this.geoFindMe();
     }
 
@@ -73,26 +74,31 @@ class Recent extends Component {
 
         }
         //Regex to check for hh:MM a format
-        if (!this.state.starttime.match(/\b((1[0-2]|0?[0-9]):([0-5][0-9]) ([AaPp][Mm]))/)) {
+        if (!this.state.time.match(/\b((1[0-2]|0?[0-9]):([0-5][0-9]) ([AaPp][Mm]))/)) {
             isError = true;
             errors.timeError = "Time must be entered in HH:MM AM/PM format (i.e. 06:18 AM)"
         }
+        //Only allow the user to submit if their latitude is within the Cleveland area
         else if (this.state.latitude > 41.6) {
             isError = true;
             errors.latitudeError = "You must enter a latitude in the Cleveland area"
         }
+        //Only allow the user to submit if their latitude is within the Cleveland area
         else if (this.state.latitude < 41.4) {
             isError = true;
             errors.latitudeError = "You must enter a latitude in the Cleveland area"
         }
+        //Only allow the user to submit if their longitude is within the Cleveland area
         else if (this.state.longtitude < -81.8) {
             isError = true;
             errors.longitudeError = "You must enter a longitude in the Cleveland area"
         }
+        //Only allow the user to submit if their longitude is within the Cleveland area
         else if (this.state.longtitude > -81.6) {
             isError = true;
             errors.longitudeError = "You must enter a longitude in the Cleveland area"
         }
+        //Don't let the user submit unless they have entered a comment
         else if (this.state.comment.length < 1) {
             isError = true;
             errors.commentError = "Please enter a brief description of the incident"
@@ -110,7 +116,7 @@ class Recent extends Component {
         event.preventDefault()
         const err = this.validate();
         if (!err) {
-            //request to server to add a new username/password
+            //request to server to add a new report to the database
             axios.post('/api/recentreports/', {
                 date: moment(this.state.date, 'YYYY-MM-DD'),
                 time: this.state.time,
