@@ -5,6 +5,7 @@ const NodeGeocoder = require("node-geocoder");
 const nodemailer = require('nodemailer')
 const smtpTransport = require('nodemailer-smtp-transport');
 
+//API Key and other information needed to create map that works with Leaflet
 const options = {
     provider: "mapquest",
     httpAdapter: 'https',
@@ -14,24 +15,22 @@ const options = {
 
 const geocoder = NodeGeocoder(options);
 
+//Function to convert time from user entered format to 24 hour format
 function convertTime12to24(time12h) {
     const [time, modifier] = time12h.split(' ');
-
     let [hours, minutes] = time.split(':');
-
     if (hours === '12') {
         hours = '00';
     }
-
     if (modifier === 'PM' || modifier === 'pm') {
         hours = parseInt(hours, 10) + 12;
     }
-
     return hours + ':' + minutes;
 }
 
-//API routes will go here
+
 router.post("/pastreports", function (req, res) {
+    const militaryTime = convertTime12to24(req.body.time);
     //Takes the address the user inputted and converts it to lattitude and longitude before passing it to the database
     geocoder.geocode(req.body.address, function (err, res) {
         const lat = res[0].latitude;
@@ -40,7 +39,7 @@ router.post("/pastreports", function (req, res) {
         console.log(req.body);
         db.Report.create({
             date: req.body.date,
-            time: req.body.time,
+            time: militaryTime,
             latitude: lat,
             longitude: long,
             comment: req.body.comment

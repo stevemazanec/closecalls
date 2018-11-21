@@ -113,7 +113,7 @@ class Heatmap extends React.Component {
                 const hourEnd = timeString.indexOf(":");
                 const H = +timeString.substr(0, hourEnd);
                 const h = H % 12 || 12;
-                const ampm = H < 12 ? "AM" : "PM";
+                const ampm = H < 12 ? " AM" : " PM";
                 timeString = h + timeString.substr(hourEnd, 3) + ampm;
 
                 //Adds a marker indicating the incidents's location, along with the time and description
